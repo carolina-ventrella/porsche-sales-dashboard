@@ -11,10 +11,22 @@
 @media(max-width:1100px){.controls{grid-template-columns:repeat(3,1fr)}.charts{grid-template-columns:1fr 1fr}.panel:first-child{grid-column:1/-1}.panel:first-child .bars{display:grid;grid-template-columns:1fr 1fr;column-gap:30px;min-height:0}.k-value{font-size:25px}}
 @media(max-width:650px){.topline{padding:18px 20px}.brand{font-size:16px;letter-spacing:5px}.tag{font-size:9px;letter-spacing:1px}.intro{padding:24px 20px}.pill{display:none}main{padding:18px 16px 30px}.filters{padding:16px}.controls{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr;gap:10px}.kpi{padding:16px 13px}.k-value{font-size:22px}.k-note{font-size:10px}.charts{grid-template-columns:1fr}.panel:first-child .bars{display:flex}.panel{padding:20px}.scope{align-items:start;flex-direction:column;gap:6px}.section-title span{display:none}.bars{min-height:0}.detail-head,footer{align-items:start;flex-direction:column}.details{padding:16px}.intro p{font-size:12px}}
 @media print{header{print-color-adjust:exact}.filters,button,.details{display:none}.charts{display:block}.panel{break-inside:avoid;margin-bottom:15px}.kpis{grid-template-columns:repeat(4,1fr)}}
+
+.wordmark{display:block;width:240px;max-width:42vw;height:auto;filter:invert(1)}
+.hero-photo{max-width:1440px;margin:auto;background:var(--dark);overflow:hidden}
+.hero-photo img{display:block;width:100%;height:clamp(220px,36vw,490px);object-fit:cover;object-position:center 60%}
+.track{height:13px}.bar-row{padding:3px 0}.bar-label{font-size:12px}
+.extra-charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.column-chart{width:100%;height:auto;display:block;overflow:visible}
+.column-chart text{font-family:'Segoe UI',Arial,sans-serif;fill:var(--muted);font-size:13px}
+.column-chart .column-value{fill:var(--ink);font-weight:600}
+.chart-scroll{overflow:auto}.chart-toggle{max-width:210px;margin:0 0 20px}
+.chart-summary{font-size:12px;color:var(--muted);margin:16px 0 0}
+@media(max-width:650px){.extra-charts{grid-template-columns:1fr}.hero-photo img{height:auto}.wordmark{width:180px}.column-chart{min-width:320px}}
 </style>
 </head>
 <body>
-<header><div class="topline"><div class="brand">PORSCHE</div><span class="tag">Sales Intelligence / DIO</span></div><div class="intro"><div><div class="index">RELATÓRIO COMERCIAL · 01</div><h1>Panorama de vendas</h1><p>Modelos, mercados e pagamentos. Uma visão conectada do negócio.</p></div><span class="pill">Base educacional · USD</span></div></header>
+<header><div class="topline"><div class="brand"><img class="wordmark" src="__LOGO__" alt="PORSCHE" width="240" height="16"></div><span class="tag">Sales Intelligence / DIO</span></div><div class="hero-photo"><img src="__HERO__" alt="Quatro modelos Porsche diante de uma paisagem litorânea" width="2400" height="1349"></div><div class="intro"><div><div class="index">RELATÓRIO COMERCIAL · 01</div><h1>Panorama de vendas</h1><p>Modelos, mercados e pagamentos. Uma visão conectada do negócio.</p></div><span class="pill">Base educacional · USD</span></div></header>
 <main>
 <section class="filters" aria-label="Filtros de vendas"><div class="filter-head"><strong>Explore a operação</strong><button id="reset">Limpar filtros ↺</button></div><div class="controls">
 <label>Modelo<select id="model"><option value="">Todos os modelos</option></select></label>
@@ -37,10 +49,15 @@
 <article class="panel city"><span class="num">02 / MERCADO</span><h3>Quais cidades concentram mais vendas?</h3><p class="sub">Quantidade de operações por cidade</p><div class="bars" id="city-chart"></div><p class="chart-note" id="city-note"></p><button class="more" id="more-cities" aria-expanded="false">Ver todas as cidades</button></article>
 <article class="panel pay"><span class="num">03 / PAGAMENTO</span><h3>Como os clientes pagam?</h3><p class="sub">Participação dos métodos no total de operações</p><div class="bars" id="payments"></div><p class="chart-note" id="payment-note"></p></article>
 </section>
+
+<section class="extra-charts" aria-label="Análise por ano e estado">
+<article class="panel"><span class="num">04 / ANO DO MODELO</span><h3>Quais anos de modelo têm mais saída?</h3><p class="sub">Quantidade de operações por ano do veículo · ordem cronológica</p><div id="year-chart" class="chart-scroll"></div><p id="year-note" class="chart-summary"></p></article>
+<article class="panel city"><span class="num">05 / ESTADO</span><h3>Onde as vendas se concentram?</h3><label class="chart-toggle">Comparar estados por<select id="state-metric"><option value="count">Quantidade de vendas</option><option value="value">Valor de vendas · USD</option></select></label><div id="state-chart" class="bars"></div><p id="state-note" class="chart-summary"></p></article>
+</section>
 <div class="notice" id="notice"></div>
 <details class="details"><summary>Consultar registros do recorte</summary><div class="detail-head"><span>Os mesmos filtros dos indicadores e gráficos.</span><button id="export">↓ Exportar CSV</button></div><div class="table-wrap"><table><caption class="sr-only">Operações filtradas, valores em dólares americanos</caption><thead><tr><th>ID</th><th>Data da venda</th><th>Modelo</th><th>Ano modelo</th><th>Cidade / UF</th><th>Pagamento</th><th>Status</th><th class="money">Preço · USD</th></tr></thead><tbody id="records"></tbody></table></div></details>
 <details class="methods"><summary>Fonte, tratamento e definições</summary><p>Fonte: <a href="https://hermes.dio.me/files/assets/8683bed0-cc33-4e06-bca9-04db9c31f9e2.xlsx">Planilha base Porsche — DIO</a>, aba Sanitized, 100 operações. Projeto educacional; não representa um relatório oficial da Porsche. Base estática, sem atualização automática.</p><p>Usamos exclusivamente os campos sanitizados e o identificador da operação. Preços são calculados em centavos de USD; ano do modelo é numérico. Nomes de clientes e vendedores não são publicados. Datas inválidas permanecem sem data; não foram estimadas. A base inclui datas até 2027, inclusive posteriores à elaboração deste projeto.</p><p>O padrão exclui 7 operações canceladas. O filtro de status permite incluí-las ou analisar apenas entregas concluídas. Valor de vendas é a soma dos preços das operações selecionadas, incluindo pendentes: não equivale a receita contábil reconhecida ou caixa recebido. Ticket médio é essa soma dividida pela quantidade de registros.</p><p>O ano da venda é extraído da data válida; o ano do modelo é um campo independente. As categorias de pagamento são mantidas como na origem, incluindo Wire Transfer e Bank Transfer separadamente. Empates nos rankings são ordenados alfabeticamente. Todos os indicadores, gráficos, registros e exportação usam o mesmo recorte.</p></details>
-<footer><span>PORSCHE · Estudo independente / DIO</span><span><a href="https://github.com/axentratc/porsche-sales-dashboard">Código e metodologia ↗</a> · HTML único, também offline</span></footer>
+<footer><span>PORSCHE · Estudo independente / DIO</span><span><a href="https://github.com/carolina-ventrella/porsche-sales-dashboard">Código e metodologia ↗</a> · HTML único, também offline</span></footer>
 </main><div id="toast" class="toast" role="status" hidden></div>
 <script id="data" type="application/json">__DATA__</script>
 <script>
@@ -59,15 +76,33 @@ const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>'
 let shownRows=[],allModels=false,allCities=false;
 function selection(){return Object.fromEntries(filters.map(k=>[k,el(k).value]));}
 function filterRows(data,s){return data.filter(r=>filters.every(k=>{const v=s[k];if(!v)return true;if(k==='status'&&v==='active')return r.status!=='Cancelled';if(k==='saleYear')return(r.date?r.date.slice(0,4):'invalid')===v;return String(r[k])===v;}));}
-function aggregate(rows,key,metric){const map=new Map();rows.forEach(r=>map.set(r[key],(map.get(r[key])||0)+(metric==='value'?r.cents:1)));return [...map].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));}
+function aggregate(rows,key,metric){const map=new Map();rows.forEach(r=>map.set(r[key],(map.get(r[key])||0)+(metric==='value'?r.cents:1)));return [...map].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0])));}
 function bars(target,items,key,format,limit){
  const box=el(target);box.replaceChildren();
  if(!items.length){box.innerHTML='<div class="empty">Nenhuma venda neste recorte.<br>Altere ou limpe os filtros.</div>';return;}
  const max=items[0][1];
  items.slice(0,limit).forEach(([name,value])=>{const button=document.createElement('button');button.className='bar-row';button.title=label(key,name)+': '+format(value)+' — filtrar';button.setAttribute('aria-label',button.title);button.innerHTML='<span class="bar-label"><span>'+escapeHTML(label(key,name))+'</span><b>'+escapeHTML(format(value))+'</b></span><div class="track" aria-hidden="true"><div class="fill" style="width:'+100*value/max+'%"></div></div>';button.addEventListener('click',()=>{el(key).value=name;render();});box.append(button);});
 }
+function columnChart(rows){
+ const items=aggregate(rows,'year','count').sort((a,b)=>a[0]-b[0]);
+ if(!items.length){el('year-chart').innerHTML='<div class="empty">Nenhuma venda neste recorte.</div>';el('year-note').textContent='Sem dados para comparar.';return;}
+ const width=560,height=280,left=42,bottom=235,top=24,plot=height-69;
+ const max=Math.max(...items.map(x=>x[1])),step=Math.max(1,Math.ceil(max/4)),ceiling=step*4;
+ const band=(width-left-12)/items.length;
+ let svg='<svg class="column-chart" viewBox="0 0 560 280" role="img" aria-label="Vendas por ano do modelo"><title>'+items.map(([y,n])=>y+': '+n+' vendas').join('; ')+'</title>';
+ for(let n=0;n<=ceiling;n+=step){const y=bottom-n/ceiling*plot;svg+='<line x1="42" y1="'+y+'" x2="548" y2="'+y+'" stroke="#e2e4e8"/><text x="32" y="'+(y+4)+'" text-anchor="end">'+n+'</text>';}
+ items.forEach(([year,n],i)=>{const x=left+i*band+band*.2,h=n/ceiling*plot,y=bottom-h;svg+='<rect x="'+x+'" y="'+y+'" width="'+band*.6+'" height="'+h+'" rx="3" fill="#c51d35"><title>'+year+': '+n+' vendas</title></rect><text class="column-value" x="'+(x+band*.3)+'" y="'+(y-8)+'" text-anchor="middle">'+n+'</text><text x="'+(x+band*.3)+'" y="257" text-anchor="middle">'+year+'</text>';});
+ el('year-chart').innerHTML=svg+'</svg>';
+ el('year-note').textContent=rows.length+' operações distribuídas por '+items.length+' anos de modelo. O ano do veículo não é o ano da venda.';
+}
+function stateChart(rows){
+ const metric=el('state-metric').value||'count',items=aggregate(rows,'state',metric),box=el('state-chart');box.replaceChildren();
+ if(!items.length){box.innerHTML='<div class="empty">Nenhuma venda neste recorte.</div>';el('state-note').textContent='Sem dados para comparar.';return;}
+ items.slice(0,8).forEach(([state,value])=>{const row=document.createElement('div');row.className='bar-row';row.innerHTML='<div class="bar-label"><span>'+escapeHTML(state)+'</span><b>'+escapeHTML(metric==='value'?usd(value):number(value)+' vendas')+'</b></div><div class="track"><div class="fill" style="width:'+value/items[0][1]*100+'%"></div></div>';box.append(row);});
+ el('state-note').textContent='Top '+Math.min(8,items.length)+' de '+items.length+' estados (siglas dos EUA). '+(metric==='value'?'Soma dos preços; não representa receita reconhecida.':'Uma operação por registro.');
+}
 function render(){
- shownRows=filterRows(DATA,selection());const count=shownRows.length,sum=shownRows.reduce((a,r)=>a+r.cents,0),missing=shownRows.filter(r=>!r.date).length;
+ shownRows=filterRows(DATA,selection());columnChart(shownRows);stateChart(shownRows);const count=shownRows.length,sum=shownRows.reduce((a,r)=>a+r.cents,0),missing=shownRows.filter(r=>!r.date).length;
  el('scope').textContent=number(count)+' de '+DATA.length+' operações · '+(el('status').value==='active'?'canceladas excluídas':el('status').value?label('status',el('status').value):'inclui todos os status');
  el('revenue').textContent=shortUSD(sum);el('revenue-exact').textContent=usd(sum)+' · total exato';el('revenue').title=usd(sum);el('revenue').setAttribute('aria-label',usd(sum));el('count').textContent=number(count);el('ticket').textContent=count?shortUSD(sum/count):'—';el('ticket').title=count?usd(sum/count):'Sem operações';el('cities').textContent=number(new Set(shownRows.map(r=>r.city+'|'+r.state)).size);
  const models=aggregate(shownRows,'model','value'),cities=aggregate(shownRows,'city','count'),payments=aggregate(shownRows,'payment','count');
@@ -88,6 +123,7 @@ filters.forEach(key=>{
  if(key==='saleYear')el(key).add(new Option('Sem data válida','invalid'));
  el(key).addEventListener('change',render);
 });
+el('state-metric').addEventListener('change',render);
 el('reset').addEventListener('click',()=>{filters.forEach(k=>el(k).value=k==='status'?'active':'');allModels=false;allCities=false;render();});
 el('more-models').addEventListener('click',()=>{allModels=!allModels;render();});el('more-cities').addEventListener('click',()=>{allCities=!allCities;render();});
 function csvText(rows){const quote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const lines=[['ID','Data da venda','Modelo','Ano do modelo','Preço USD','Pagamento','Cidade','Estado','Status'],...rows.map(r=>[r.id,r.date,r.model,r.year,(r.cents/100).toFixed(2),label('payment',r.payment),r.city,r.state,label('status',r.status)])];return '\ufeff'+lines.map(r=>r.map(quote).join(';')).join('\r\n');}
@@ -95,3 +131,5 @@ el('export').addEventListener('click',()=>{const blob=new Blob([csvText(shownRow
 render();
 </script>
 </body></html>
+
+

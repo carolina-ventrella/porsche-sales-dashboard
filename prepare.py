@@ -1,4 +1,4 @@
-import csv, json, hashlib
+import csv, json, hashlib, base64
 from pathlib import Path
 from decimal import Decimal
 from datetime import date
@@ -39,5 +39,7 @@ audit=dict(records=len(rows),invalid_dates=sum(r['date'] is None for r in rows),
     active_cents=sum(r['cents'] for r in active),sha256=hashlib.sha256(source.read_bytes()).hexdigest())
 (root/'audit.json').write_text(json.dumps(audit,indent=2),encoding='utf-8')
 template=(root/'dashboard.template.html').read_text(encoding='utf-8')
+for token, filename, mime in [('__HERO__','porsche-header.webp','image/webp'),('__LOGO__','porsche-wordmark.svg','image/svg+xml')]:
+    template=template.replace(token,'data:'+mime+';base64,'+base64.b64encode((root/'assets'/filename).read_bytes()).decode())
 (root/'index.html').write_text(template.replace('__DATA__',json.dumps(rows,ensure_ascii=False)),encoding='utf-8')
 print(json.dumps(audit,indent=2))
